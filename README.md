@@ -42,7 +42,7 @@ In +robot/ there are scripts for all the robot structures used:
 # Bugs and other accidental features
 
 Works on Matlab 2012a, other untested.
-Symbolic Math Toolbox is optional for pure testing, used for dynamics derivation and analysis (singularities)
+Symbolic Math Toolbox is optional for pure testing, used for dynamics derivation and analysis (singularities). Some name conflicts may arise on Windows due to a couple of functions using case-sensitive names (adjoint representations Ad() ad()).
 
 Visible bugs:
 - Support model - still has a tendency to let points fall through ground, especially when controlled.
