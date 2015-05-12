@@ -6,6 +6,7 @@ global eva
 w = [];
 
 w.n = n;
+w.type = 'full'; % full plots
 
 w.PlanesOfMotion = {'spatial','sagittal','frontal','transverse'};
 w.geo = [ 3, 5 ];
@@ -95,7 +96,13 @@ for plane = w.PlanesOfMotion % sagittal, frontal, tranverse...
 	view( w.(plane{1}).camera )
 	w.(plane{1}).plotcom = plot3( 0,0,0,'.r' );
 	grid on
+	w.(plane{1}).quiver = quiver3( 0,0,0,0,0,0 );
+	set( w.(plane{1}).quiver, 'Color', 'g');
 end
+
+
+
+
 %  refreshdata(w.figure,'caller')
 
 

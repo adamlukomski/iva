@@ -7,9 +7,17 @@ for ievent = 1:length(ie)
 			else
 				fprintf('   IMPACT  link %i time %f\n',ie(ievent),te )
 				eva.support = unique([ eva.support; ie(ievent) ]);
-				dqafter = motion.impact( x0, ie(ievent) );
+				
+				[ dqafter F ] = motion.impact( x0, ie(ievent) );
+				
+				results(results_counter).impact.before = x0(eva.n+1:2*eva.n);
+				results(results_counter).impact.after = dqafter;
+				results(results_counter).impact.F = F;
+				
 				x0(eva.n+1:2*eva.n) = dqafter;
+				
 				% maybe you wanna... lift someone?
+				
 				[dx] = dyn_v06( t0, x0' );
 				[val,term,dir] = dyn_v06_ev( t0, x0' );
 				for lifti=1+eva.n:2*eva.n
@@ -24,7 +32,7 @@ for ievent = 1:length(ie)
 			eva.support = setdiff( eva.support, lift );
 			fprintf( 'yo! lifted %i\n', ie(ievent) )
 		otherwise
-			disp('unrecognised event!');
+			fprintf('unrecognised event!\n');
 			return
 	end % switch ievent
 end % for ievent
