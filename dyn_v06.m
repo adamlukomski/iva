@@ -78,7 +78,7 @@ end
 u = zeros(n-un,1);
 dr = dq;
 
-if ~exist( eva.control ) | isempty( eva.control )
+if ~exist( 'eva.control' ) | isempty( eva.control )
 	% fallback
 	control.(eva.name).control
 else
