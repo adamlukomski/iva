@@ -1,4 +1,4 @@
-function dqafter = impact( x0, ie )
+function [dqafter F] = impact( x0, ie )
 
 global eva
 
@@ -9,7 +9,7 @@ D = robot.(eva.name).out_lieD( q' );
 
 Afull = [];
 for i=1:length(eva.support)
-	Apart = robot.jacobian( eva.support(i), q )
+	Apart = robot.jacobian( eva.support(i), q );
 	Afull = [ Afull ; Apart( eva.impactaxis,: ) ];
 end
 
@@ -23,4 +23,6 @@ end
 out = inv( [ D -A' ; A zeros( size(A,1) ) ] ) * [ D * dqbefore ; zeros(size(A,1),1) ];
 
 dqafter = reshape( out(1:eva.n), eva.n, 1 );
+F = out(eva.n+1:end);
+
 %  robot.dp( 1:7, q, dqafter )

@@ -1,3 +1,9 @@
+# News
+
+2017-02-19
+A slightly newer version, a barebone one, but with correct dynamics - the last one contained a lot of errors, especially COM points.
+Will try to upload the one with trajectories and more models soon.
+
 # About
 
 Just a collection of scripts I am using in simulation of a bipedal robot
@@ -23,25 +29,22 @@ If you use it - and you know you use it at your own risk, I'm not really sure th
 
 # How to use
 
-Just start test_v06 in Matlab.
+Just start start_001 in Matlab.
 
-* test_v06 contains ode-based simulation of a biped
-* dyn_v06 contains actual dynamics equation
-* dyn_v06_ev contains the events description
-
-* basic_triple_pendulum is a start point for triple pendulum simulation
+* single_step contains ode-based simulation of a biped
+* dyn_v08 contains actual dynamics equation
+* dyn_v08_ev contains the events description
 
 In +robot/ there are scripts for all the robot structures used:
 
-* +robot/calc_triple.m is a script to generate equations for triple pendulum
-  +robot/+triple/out_eva.mat contains saved model
-
-* +robot/calc_fullbody_arms.m is a script to generate equations for a full planar humanoid robot
-  +robot/+fullbody/out_eva.mat contains saved model
+* +robot/calc_ are the scripts to generate equations for different model
+  +robot/+... contains saved models
 
 # Bugs and other accidental features
 
-Works on Matlab 2012a, other untested.
+Works on Matlab R2012a, other untested.
+I noticed on Matlab R2016a that big .m files do not work AT ALL. Weird. I'm taking about 200kb+ files of pure mathematics, will have to check it later.
+
 Symbolic Math Toolbox is optional for pure testing, used for dynamics derivation and analysis (singularities). Some name conflicts may arise on Windows due to a couple of functions using case-sensitive names (adjoint representations Ad() ad()).
 
 Visible bugs:

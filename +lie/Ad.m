@@ -8,7 +8,7 @@ switch size(g,1)
 		R = g(1:3,1:3);
 		T = lie.hat( g(1:3,4) );
 	otherwise
-		disp( ['Ad, size [' size(g) '] not supported' ]);
+		fprintf( ['Ad, size [' size(g) '] not supported\n' ]);
 		R = [];
 		T = [];
 end

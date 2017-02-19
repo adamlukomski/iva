@@ -66,6 +66,7 @@ for i=1:n
 
 	eva.link(i).Aall = lie.simplify_elements( eva.link(i).Aall );
 	eva.link(i).g = eva.link(i).Aall * [ eye(3) eva.link(i).p0 ; 0 0 0 1 ];
+%  	eva.link(i).g = eva.link(i).Aall;
 	eva.link(i).p = eva.link(i).Aall * [ eva.link(i).p0 ; 1 ];
 
 	eva.link(i).jac = sym( zeros(3,n) );
@@ -81,14 +82,26 @@ for i=1:n
 	eva.link(i).dp = eva.link(i).jac * dq;
 end
 
-
+% now for the center of mass for each link:
+for i=1:n
+	eva.link(i).pc = eva.link(i).g*[ eva.link(i).c ;1];
+	
+	eva.link(i).jacc = sym( zeros(3,n) );
+	for j = eva.link(i).chain % go through the chain and multiply / sum
+		jacc = lie.hat(eva.link(j).S)*eva.link(i).pc; % size is 4x1, need 3x1
+		eva.link(i).jacc(:,j) = jacc(1:3,1);
+	end
+	eva.link(i).dpc = eva.link(i).jacc * dq;
+end
 
 
 fprintf('\n')
 for i=1:n
-	write_full( [ '+robot/+' eva.name '/out_p' num2str(i) '.m'],{'q'},[eva.list_q],{eva.link(i).p,'p'});
-	write_full( [ '+robot/+' eva.name '/out_dp' num2str(i) '.m'],{'q','dq'},[eva.list_q;eva.list_dq],{eva.link(i).dp,'dp'});
-	write_full( [ '+robot/+' eva.name '/out_g' num2str(i) '.m'],{'q'},[eva.list_q],{eva.link(i).g,'g'});
-	write_full( [ '+robot/+' eva.name '/out_jac' num2str(i) '.m'],{'q'},[eva.list_q],{eva.link(i).jac,'jac'});
-	write_full( [ '+robot/+' eva.name '/out_jac6' num2str(i) '.m'],{'q'},[eva.list_q],{eva.link(i).jac6,'jac6'});
+	tools.write_full( [ '+robot/+' eva.name '/out_p' num2str(i) '.m'],{'q'},[eva.list_q],{eva.link(i).p,'p'});
+	tools.write_full( [ '+robot/+' eva.name '/out_dp' num2str(i) '.m'],{'q','dq'},[eva.list_q;eva.list_dq],{eva.link(i).dp,'dp'});
+	tools.write_full( [ '+robot/+' eva.name '/out_g' num2str(i) '.m'],{'q'},[eva.list_q],{eva.link(i).g,'g'});
+	tools.write_full( [ '+robot/+' eva.name '/out_jac' num2str(i) '.m'],{'q'},[eva.list_q],{eva.link(i).jac,'jac'});
+	tools.write_full( [ '+robot/+' eva.name '/out_jac6' num2str(i) '.m'],{'q'},[eva.list_q],{eva.link(i).jac6,'jac6'});
+	tools.write_full( [ '+robot/+' eva.name '/out_pc' num2str(i) '.m'],{'q'},[eva.list_q],{eva.link(i).pc,'pc'});
+	tools.write_full( [ '+robot/+' eva.name '/out_dpc' num2str(i) '.m'],{'q','dq'},[eva.list_q;eva.list_dq],{eva.link(i).dpc,'dpc'});
 end

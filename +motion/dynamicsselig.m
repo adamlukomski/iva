@@ -7,9 +7,14 @@ function dynamicsselig
 global eva
 fprintf('N ');
 for i=1:eva.n
+	disp('WARNING: version for calc_ with N = J mC mC m  !')
+	disp('robot with no internal N, calculating from J and m, hat(c)')
+	disp('will NOT work with bioloid')
 	eva.link(i).Nnormal = [eva.link(i).J zeros(3); zeros(3) eye(3)*eva.link(i).m ];
+	eva.link(i).Nnormal = [eva.link(i).J, eva.link(i).m*lie.hat(eva.link(i).c); eva.link(i).m*lie.hat(eva.link(i).c)', eye(3)*eva.link(i).m ];
 	% translation only!
 	eva.link(i).Ntranslation = lie.Ad( [ [ eye(3) ; 0 0 0 ] eva.link(i).p ] );
+	eva.link(i).Ntranslation = lie.Ad( eva.link(i).g );
 	eva.link(i).N =  inv(eva.link(i).Ntranslation')*eva.link(i).Nnormal*inv(eva.link(i).Ntranslation);
 end
 
@@ -111,9 +116,9 @@ eva.dynamics.Dselig = D;
 eva.dynamics.Cselig = C;
 eva.dynamics.Gselig = G;
 fprintf('\n');
-write_full( [ '+robot/+' eva.name '/out_lieD.m'],{'q'},[eva.list_q],{D,'D'});
-write_full( [ '+robot/+' eva.name '/out_lieC.m'],{'q','dq'},[eva.list_q;eva.list_dq],{C,'C'});
-write_full( [ '+robot/+' eva.name '/out_lieG.m'],{'q'},[eva.list_q],{G,'G'});
+tools.write_full( [ '+robot/+' eva.name '/out_lieD.m'],{'q'},[eva.list_q],{D,'D'});
+tools.write_full( [ '+robot/+' eva.name '/out_lieC.m'],{'q','dq'},[eva.list_q;eva.list_dq],{C,'C'});
+tools.write_full( [ '+robot/+' eva.name '/out_lieG.m'],{'q'},[eva.list_q],{G,'G'});
 
 
 for c = 1:eva.n; % current djacobian_c
@@ -137,7 +142,34 @@ for c = 1:eva.n; % current djacobian_c
 	djac_dq = ( lie.hat(term2) + term1 ) * eva.link(c).p;
 	eva.link(c).djac_dq = djac_dq(1:3,1);
 
-	write_full( [ '+robot/+' eva.name '/out_djac_dq' num2str(c) '.m'],{'q','dq'},[eva.list_q;eva.list_dq],{eva.link(c).djac_dq,'djac_dq'});
+	tools.write_full( [ '+robot/+' eva.name '/out_djac_dq' num2str(c) '.m'],{'q','dq'},[eva.list_q;eva.list_dq],{eva.link(c).djac_dq,'djac_dq'});
 end
 
-motion.test_djac_failsafe
+fprintf(' potential energy V, ');
+Vi = sym(0);
+for i=1:eva.n
+	Vi(i) = eva.link(i).m*9.81*eva.link(i).pc(3);
+end
+V = sum( Vi );
+tools.write_full( [ '+robot/+' eva.name '/out_V.m'],{'q'},[eva.list_q],{V,'V'});
+
+% COM point
+% the [eva.link.m]*0] is needed to erase the 1 from [px;py;pz;1] that would ruin COM point
+com = sum( [eva.link.pc].*[[eva.link.m;eva.link.m;eva.link.m];[eva.link.m]*0], 2 )./(sum([eva.link.m]));
+tools.write_full( [ '+robot/+' eva.name '/out_com.m'],{'q'},[eva.list_q],{com,'com'});
+
+dcom = sum( [eva.link.dpc].*[eva.link.m;eva.link.m;eva.link.m], 2 )./(sum([eva.link.m]));
+tools.write_full( [ '+robot/+' eva.name '/out_dcom.m'],{'q','dq'},[eva.list_q;eva.list_dq],{dcom,'dcom'});
+
+
+
+fprintf(' djac, ');
+%
+%   FIX THIS:   needs to be explicit
+%
+for i=1:eva.n
+	for j=1:eva.n
+		eva.link(i).djac(1:3,j) = jacobian(eva.link(i).jac(:,j),eva.q)*eva.dq;
+	end
+	tools.write_full( [ '+robot/+' eva.name '/out_djac' num2str(i) '.m'],{'q','dq'},[eva.list_q;eva.list_dq],{eva.link(i).djac,'djac'});
+end
