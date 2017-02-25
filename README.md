@@ -1,5 +1,9 @@
 # News
 
+2017-02-25
+Added an old simulation, start003.m - still without full polynomial trajectory tracking, I am cleaning that up, will be in next update.
+draw.window now shows also the desired position for tracking. Added a simple Poincare section for stability check, shows convergence of the configuration during impact phase.
+
 2017-02-19
 A slightly newer version, a barebone one, but with correct dynamics - the last one contained a lot of errors, especially COM points.
 Will try to upload the one with trajectories and more models soon.
