@@ -1,17 +1,7 @@
-function window(q,dq)
-% window(q,dq)
-%  create a visualisation of a robot
-%  tested for a biped
-%  dq may still not work
-%
-% usage:
-%  window()  creates a blank window with basic elements
-%  window( rand(n,1) ) will show you an actual robot
-%
+function window(q,dq,shadowq)
 
 global eva
 
-% if there is no main window - create a blank one
 if isempty( findobj( 'Tag', 'main window' ) )
 	figure('Tag','main window')
 	
@@ -25,6 +15,7 @@ if isempty( findobj( 'Tag', 'main window' ) )
 	% chains right now contain how to draw
 	for limb = 1:length(eva.chains)
 		line( 'XData', 0, 'YData', 0, 'ZData', 0, 'Color', colors(limb), 'Tag', [ 'limb' num2str(limb) ] )
+		line( 'XData', 0, 'YData', 0, 'ZData', 0, 'Color', colors(limb), 'Tag', [ 'shadowlimb' num2str(limb) ], 'LineStyle','--' )
 	end
 	line(0,0,0,'Marker','.','Tag','com point')
 	line([-1 1],[0 0],[0 0],'LineStyle','--','Tag','ground')
@@ -62,8 +53,27 @@ if exist('q')
 end
 
 if exist('dq')
-	dp = robot.dp( 1:eva.n, q, dq );
-	dpoint = unique( [eva.chains.chain] );
+%  	dp = robot.dp( 1:eva.n, q, dq );
+%  	dpoint = unique( [eva.chains.chain] );
 else
+	% zero the velocity so that it is not shown
+end
 
+
+if exist('shadowq')
+	shadowp = robot.p( 1:eva.n, shadowq );
+	for limb = 1:length(eva.chains)
+		current = shadowp( 1:3, eva.chains(limb).chain );
+		set( findobj( 'Tag', [ 'shadowlimb' num2str(limb) ] ), ...
+		     'XData', current(1,:), ...
+		     'YData', current(2,:), ...
+		     'ZData', current(3,:) )
+	end
+else
+	for limb = 1:length(eva.chains)
+		set( findobj( 'Tag', [ 'shadowlimb' num2str(limb) ] ), ...
+		     'XData', 0, ...
+		     'YData', 0, ...
+		     'ZData', 0 )
+	end
 end

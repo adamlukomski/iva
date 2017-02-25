@@ -1,4 +1,4 @@
-function [t0,x0,results] = single_step( t0, x0, sup )
+function [t0,x0,t,x] = single_step( t0, x0, sup )
 
 global eva
 global plotter1
@@ -25,17 +25,14 @@ end
 
 eva.support = sup;
 fprintf('sim start: t0=%f\n',t0);
-opts = odeset();
 opts = odeset( 'events', @dyn_v08_ev );
 [t,x,te,xe,ie] = ode45( @dyn_v08, t0:0.01:t0+eva.controlsys.tmax, x0, opts );
 
-results = [];
-
 for i=1:length(t)
-	draw.window( x(i,1:eva.n) )
-	pause(0.01);
+	[dx,other] = dyn_v08( t(i), x(i,:) );
+	draw.window( x(i,1:eva.n), 0, [x(i,1:3) other.yr'] )
+	pause(0.01)
 end
-
 
 t0 = t(end);
 x0 = x(end,:); % must be before impact
@@ -58,5 +55,3 @@ catch err
 		nextstep = 1;
 	end
 end
-
-

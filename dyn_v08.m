@@ -12,22 +12,28 @@ un = eva.underactuation;
 
 % in multi-contact support phases increase the underactuation to limit the possible support errors
 % but only if horizontal friction is on
-
 if length( eva.support )>1 & any(eva.supportaxis==1)
     un = eva.underactuation + ( length(eva.support) - 1);
 end
 
 q = x(1:n);
 dq = x(n+1:2*n);
-%  r = x(2*n+1:3*n);
 
+% ========== CHOICE OF DYNAMICS, UNCOMMENT ONE OF THOSE
 
-% mass-inertia
+% ----- SELIG with tree-kinematics mod-----
 D0 = robot.(eva.name).out_lieD( q );
-% coriolis and gravity together
 C0 = robot.(eva.name).out_lieC( q, dq ) * dq + robot.(eva.name).out_lieG( q );
+
+%  ------ FEATHERSTONE recursive, modded slightly -----
+%  [D0, C0] = motion.HC( q,dq );
+
+%  % ------ FEATHERSTONE symbolic, modded slightly -----
+%  D0 = robot.(eva.name).out_featherD( q );
+%  C0 = robot.(eva.name).out_featherC( q, dq );
+
+
 B0 = [ zeros( un, n-un); eye(n-un) ];
-% eva.B0 = B0; % for input plot
 
 if isempty( eva.support )% normal model
 	D = D0;
